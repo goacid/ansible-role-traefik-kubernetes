@@ -2,43 +2,60 @@
 - name: Check if Helm command is installed locally
   shell: hash helm # noqa 305
   delegate_to: 127.0.0.1
+  connection: local
   run_once: True
   changed_when: False
   args:
     executable: "/bin/bash"
-
+  tags:
+    - traefik-kubernetes
+    
 - name: Set default action to only render template via Helm
   set_fact:
     deploy_action: "template"
   delegate_to: 127.0.0.1
+  connection: local
   run_once: True
+  tags:
+    - traefik-kubernetes
 
 - name: Set action to install via Helm
   set_fact:
     deploy_action: "install"
   delegate_to: 127.0.0.1
+  connection: local
   run_once: True
   when:
-    - action is defined
-    - '"install" in action'
+    - traefik_kubernetes_action is defined
+    - '"install" in traefik_kubernetes_action'
+  tags:
+    - traefik-kubernetes
 
 - name: Set action to upgrade via Helm
   set_fact:
     deploy_action: "upgrade"
   delegate_to: 127.0.0.1
+  connection: local
   run_once: True
   when:
-    - action is defined
-    - '"upgrade" in action'
+    - traefik_kubernetes_action is defined
+    - '"upgrade" in traefik_kubernetes_action'
+  tags:
+    - traefik-kubernetes    
 
 - name: Set action to delete via Helm
   set_fact:
     deploy_action: "delete"
   delegate_to: 127.0.0.1
+  connection: local
   run_once: True
   when:
-    - action is defined
-    - '"delete" in action'
+    - traefik_kubernetes_action is defined
+    - '"delete" in traefik_kubernetes_action'
+  tags:
+    - traefik-kubernetes
 
 - name: Include tasks to execute requested action
   include_tasks: "tasks/{{ deploy_action|lower }}.yml"
+  tags:
+    - traefik-kubernetes
