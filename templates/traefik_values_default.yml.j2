@@ -31,10 +31,12 @@ globalArguments:
 # or "toleration's" accordingly. See link to Helm chart values above.
 deployment:
   enabled: true
-  kind: DaemonSet
+  kind: Deployment
+  #kind: DaemonSet
   dnsPolicy: ClusterFirstWithHostNet
 
-# Instructs Traefik to listen on various ports.
+ 
+ # Instructs Traefik to listen on various ports.
 ports:
   # The name of this one can't be changed as it is used for the readiness
   # and liveness probes, but you can adjust its config to your liking.
@@ -43,7 +45,7 @@ ports:
   # Opening http://localhost:9000/dashboard/ should show the dashboard.
   traefik:
     port: 9000
-    expose: false
+    expose: true
     protocol: TCP
   # Unsecured incoming HTTP traffic. If you uncomment "redirectTo: websecure"
   # all traffic that arrives at this port will be redirected to "websecure"
@@ -68,6 +70,16 @@ ports:
     hostPort: 443
     expose: true
     protocol: TCP
+  dns-t:
+    port: 5053
+    hostport: 53
+    expose: true
+    protocol: TCP
+  dns-u:
+    port: 5053
+    hostport: 53
+    expose: true
+    protocol: UDP
 
 # These security settings are basically best practice to limit attack surface
 # as good as possible.
@@ -96,8 +108,18 @@ logs:
 
 # As Traefik web/websecure ports are exposed by "hostPort" a service isn't
 # needed.
+#service:
+#  enabled: false
+
 service:
-  enabled: false
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    metallb.universe.tf/allow-shared-ip: default
+  spec: 
+    externalTrafficPolicy: Cluster
+    loadBalancerIP: "192.168.1.250"
+    
 
 # CPU and RAM resource limits. These settings should also be set to
 # reasonable values in case of a memory leak e.g.
@@ -109,3 +131,13 @@ resources:
     cpu: "300m"
     memory: "150Mi"
 
+persistence:
+  enabled: false
+  name: traefik-data
+#  existingClaim: ""
+  accessMode: ReadWriteOnce
+  size: 128Mi
+  # storageClass: "longhorn"
+  path: /data
+  annotations: {}
+  # subPath: "" # only mount a subpath of the Volume into the pod
