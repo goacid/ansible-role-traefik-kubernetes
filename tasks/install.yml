@@ -1,8 +1,12 @@
 ---
 - name: Include prerequisites
   include_tasks: "tasks/prerequisites.yml"
+  tags:
+    - traefik-kubernetes 
 
 - name: Render values
+  tags:
+    - traefik-kubernetes 
   block:
     - name: Create temporary file for Helm values
       tempfile:
@@ -63,4 +67,5 @@
       run_once: True
       delegate_to: 127.0.0.1
       when: traefik_values_tmp_file.path is defined
-
+  tags:
+    - traefik-kubernetes 

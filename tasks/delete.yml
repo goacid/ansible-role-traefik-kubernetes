@@ -1,5 +1,7 @@
 ---
 - name: Uninstall release via Helm
+  tags:
+    - traefik-kubernetes 
   shell: # noqa 301
     set -o errexit
     set -o pipefail
@@ -15,6 +17,8 @@
     executable: "/bin/bash"
 
 - name: Remove repository via Helm
+  tags:
+    - traefik-kubernetes 
   shell: # noqa 301
     set -o errexit
     set -o pipefail
@@ -30,6 +34,8 @@
     executable: "/bin/bash"
 
 - name: Delete namespace
+  tags:
+    - traefik-kubernetes 
   k8s:
     name: "{{ traefik_namespace }}"
     api_version: v1

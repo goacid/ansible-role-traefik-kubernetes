@@ -13,7 +13,7 @@
 # and route them accordingly.
 additionalArguments:
   - "--log.level=INFO"
-  - "--providers.kubernetesingress.ingressclass=traefik"
+  - "--providers.kubernetesingress.ingressclass=traefik-cert-manager"
 
 # Global arguments passed to Traefik's binary.
 # https://doc.traefik.io/traefik/reference/static-configuration/cli/
@@ -70,16 +70,16 @@ ports:
     hostPort: 443
     expose: true
     protocol: TCP
-  dns-t:
-    port: 5053
-    hostport: 53
-    expose: true
-    protocol: TCP
-  dns-u:
-    port: 5053
-    hostport: 53
-    expose: true
-    protocol: UDP
+#  dns-t:
+#    port: 5053
+#    hostport: 53
+#    expose: true
+#    protocol: TCP
+#  dns-u:
+#    port: 5053
+#    hostport: 53
+#    expose: true
+#    protocol: UDP
 
 # These security settings are basically best practice to limit attack surface
 # as good as possible.
@@ -114,8 +114,8 @@ logs:
 service:
   enabled: true
   type: LoadBalancer
-  annotations:
-    metallb.universe.tf/allow-shared-ip: default
+#  annotations:
+#    metallb.universe.tf/allow-shared-ip: traefik
   spec: 
     externalTrafficPolicy: Cluster
     loadBalancerIP: "192.168.1.250"
